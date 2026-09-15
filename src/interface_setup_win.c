@@ -28,8 +28,8 @@
 
 #include <ncurses.h>
 
-static char *setup_window_category_names[setup_window_selection_count] = {"General", "Devices", "Chart", "Processes",
-                                                                          "GPU Select"};
+static char *setup_window_category_names[setup_window_selection_count] = {"常规", "设备", "图表", "进程",
+                                                                          "GPU 选择"};
 
 // All the windows used to display the setup
 enum setup_window_type {
@@ -50,7 +50,7 @@ enum setup_general_options {
 };
 
 static const char *setup_general_option_description[setup_general_options_count] = {
-    "Disable color (requires save and restart)", "Show support messages on startup", "Update interval (seconds)"};
+    "禁用颜色（需保存并重启）", "启动时显示支持信息", "刷新间隔（秒）"};
 
 // Header Options
 
@@ -62,8 +62,8 @@ enum setup_header_options {
 };
 
 static const char *setup_header_option_descriptions[setup_header_options_count] = {
-    "Temperature in fahrenheit", "Keep displaying Encoder/Decoder rate (after reaching an idle state)",
-    "Display extra GPU info bar"};
+    "温度用华氏度", "空闲后仍显示编解码速率",
+    "显示额外 GPU 信息栏"};
 
 // Chart Options
 
@@ -74,16 +74,16 @@ enum setup_chart_options {
   // setup_chart_start_gpu_list = setup_chart_color_start + slot_count+1 (computed)
 };
 
-static const char *setup_chart_reverse_description = "Reverse plot direction";
-static const char *setup_chart_all_gpu_description  = "Displayed all GPUs";
-static const char *setup_chart_gpu_description      = "Displayed GPU";
+static const char *setup_chart_reverse_description = "反转曲线方向";
+static const char *setup_chart_all_gpu_description  = "显示全部 GPU";
+static const char *setup_chart_gpu_description      = "显示 GPU";
 
 static const char *setup_chart_gpu_value_descriptions[plot_information_count] = {
-    "GPU utilization rate",  "GPU memory utilization rate",   "GPU encoder rate",  "GPU decoder rate",
-    "GPU temperature",       "Power draw rate (current/max)", "Fan speed",         "GPU clock rate",
-    "GPU memory clock rate", "Effective load rate",           "PCIe RX load rate", "PCIe TX load rate"};
+    "GPU 利用率",  "显存利用率",   "GPU 编码器利用率",  "GPU 解码器利用率",
+    "GPU 温度",       "功耗（当前/最大）", "风扇转速",         "GPU 核心频率",
+    "显存频率", "有效负载",           "PCIe 接收负载", "PCIe 发送负载"};
 
-static const char *chart_color_names[] = {"Red", "Cyan", "Green", "Yellow", "Blue", "Magenta", "White"};
+static const char *chart_color_names[] = {"红", "青", "绿", "黄", "蓝", "品红", "白"};
 static const unsigned chart_color_names_count = ARRAY_SIZE(chart_color_names);
 
 // Build labels for each active plot slot for a given GPU's to_draw mask.
@@ -118,11 +118,11 @@ enum setup_proc_list_options {
 };
 
 static const char *setup_proc_list_option_description[setup_proc_list_options_count] = {
-    "Don't display the process list", "Hide nvtop in the process list", "Sort Ascending", "Sort by", "Field Displayed"};
+    "不显示进程列表", "在进程列表中隐藏 nvtop", "升序排列", "排序字段", "显示字段"};
 
 static const char *setup_proc_list_value_descriptions[process_field_count] = {
-    "Process Id",    "User name",        "Device Id", "Workload type",    "GPU usage", "Encoder usage",
-    "Decoder usage", "GPU memory usage", "CPU usage", "CPU memory usage", "Command"};
+    "进程 ID",    "用户名",        "设备 ID", "负载类型",    "GPU 占用", "编码器占用",
+    "解码器占用", "显存占用", "CPU 占用", "内存占用", "命令"};
 
 static unsigned int sizeof_setup_windows[setup_window_type_count] = {[setup_window_type_setup] = 11,
                                                                      [setup_window_type_single] = 0,
@@ -200,7 +200,7 @@ void hide_setup_window(struct nvtop_interface *interface) { interface->setup_win
 
 static void draw_setup_window_setup(struct nvtop_interface *interface) {
   werase(interface->setup_win.setup);
-  mvwprintw(interface->setup_win.setup, 0, 0, "Setup");
+  mvwprintw(interface->setup_win.setup, 0, 0, "设置");
   mvwchgat(interface->setup_win.setup, 0, 0, sizeof_setup_windows[setup_window_type_setup], A_STANDOUT, green_color,
            NULL);
   for (enum setup_window_section category = setup_general_selected; category < setup_window_selection_count;
@@ -228,7 +228,7 @@ static void draw_setup_window_general(struct nvtop_interface *interface) {
     interface->setup_win.options_selected[0] = setup_general_options_count - 1;
 
   wattr_set(interface->setup_win.single, A_STANDOUT, green_color, NULL);
-  mvwprintw(interface->setup_win.single, 0, 0, "General Options");
+  mvwprintw(interface->setup_win.single, 0, 0, "常规选项");
   wstandend(interface->setup_win.single);
 
   unsigned int cur_col, maxcols, tmp;
@@ -273,7 +273,7 @@ static void draw_setup_window_header(struct nvtop_interface *interface) {
   WINDOW *options_win = interface->setup_win.single;
 
   wattr_set(options_win, A_STANDOUT, green_color, NULL);
-  mvwprintw(options_win, 0, 0, "Devices Display Options");
+  mvwprintw(options_win, 0, 0, "设备显示选项");
   wstandend(options_win);
 
   unsigned int cur_col, maxcols, tmp;
@@ -356,7 +356,7 @@ static void draw_setup_window_chart(unsigned devices_count, struct list_head *de
   wnoutrefresh(interface->setup_win.split[1]);
 
   wattr_set(option_list_win, A_STANDOUT, green_color, NULL);
-  mvwprintw(option_list_win, 0, 0, "Chart Options");
+  mvwprintw(option_list_win, 0, 0, "图表选项");
   wstandend(option_list_win);
 
   unsigned int cur_col, maxcols, tmp;
@@ -431,11 +431,11 @@ static void draw_setup_window_chart(unsigned devices_count, struct list_head *de
   if (interface->setup_win.options_selected[0] >= chart_all_gpu) {
     WINDOW *value_list_win = interface->setup_win.split[1];
     wattr_set(value_list_win, A_STANDOUT, green_color, NULL);
-    mvwprintw(value_list_win, 0, 0, "Metric Displayed in Graph");
+    mvwprintw(value_list_win, 0, 0, "图表显示的指标");
     getmaxyx(value_list_win, tmp, maxcols);
     unsigned selected_gpu = interface->setup_win.options_selected[0] - chart_start_gpu_list;
     if (interface->setup_win.options_selected[0] == chart_all_gpu) {
-      wprintw(value_list_win, " (All GPUs)");
+      wprintw(value_list_win, "（全部 GPU）");
     } else {
       struct gpu_info *device;
       unsigned index = 0;
@@ -454,7 +454,7 @@ static void draw_setup_window_chart(unsigned devices_count, struct list_head *de
     getyx(value_list_win, tmp, cur_col);
     mvwchgat(value_list_win, 0, cur_col, maxcols - cur_col, A_STANDOUT, green_color, NULL);
     wattr_set(value_list_win, A_NORMAL, magenta_color, NULL);
-    mvwprintw(value_list_win, 1, 0, "Maximum of 4 metrics per GPU");
+    mvwprintw(value_list_win, 1, 0, "每个 GPU 最多 4 个指标");
     wstandend(value_list_win);
 
     for (enum plot_information i = plot_gpu_rate; i < plot_information_count; ++i) {
@@ -517,7 +517,7 @@ static void draw_setup_window_proc_list(struct nvtop_interface *interface) {
   touchwin(interface->setup_win.split[1]);
 
   wattr_set(option_list_win, A_STANDOUT, green_color, NULL);
-  mvwprintw(option_list_win, 0, 0, "Process List Options");
+  mvwprintw(option_list_win, 0, 0, "进程列表选项");
   wstandend(option_list_win);
   unsigned int cur_col, maxcols, tmp;
   (void)tmp;
@@ -567,7 +567,7 @@ static void draw_setup_window_proc_list(struct nvtop_interface *interface) {
     // Sort by
     if (interface->setup_win.options_selected[0] == setup_proc_list_sort_by) {
       wattr_set(value_list_win, A_STANDOUT, green_color, NULL);
-      mvwprintw(value_list_win, 0, 0, "Processes are sorted by:");
+      mvwprintw(value_list_win, 0, 0, "进程排序依据：");
       wstandend(value_list_win);
       wclrtoeol(value_list_win);
       getmaxyx(value_list_win, tmp, maxcols);
@@ -590,14 +590,14 @@ static void draw_setup_window_proc_list(struct nvtop_interface *interface) {
       if (!index) {
         // Nothing displayed
         wcolor_set(value_list_win, magenta_color, NULL);
-        mvwprintw(value_list_win, 1, 0, "Nothing to sort: none of the process fields are displayed");
+        mvwprintw(value_list_win, 1, 0, "无法排序：未显示任何进程字段");
         wstandend(value_list_win);
       }
     }
     // Process field displayed
     if (interface->setup_win.options_selected[0] == setup_proc_list_display) {
       wattr_set(value_list_win, A_STANDOUT, green_color, NULL);
-      mvwprintw(value_list_win, 0, 0, "Process Field Displayed:");
+      mvwprintw(value_list_win, 0, 0, "显示的进程字段：");
       wstandend(value_list_win);
       wclrtoeol(value_list_win);
       getmaxyx(value_list_win, tmp, maxcols);
@@ -627,7 +627,7 @@ static void draw_setup_window_gpu_select(struct nvtop_interface *interface) {
     interface->setup_win.options_selected[0] = interface->total_dev_count - 1;
 
   wattr_set(interface->setup_win.single, A_STANDOUT, green_color, NULL);
-  mvwprintw(interface->setup_win.single, 0, 0, "Select Monitored GPUs");
+  mvwprintw(interface->setup_win.single, 0, 0, "选择监视的 GPU");
   wstandend(interface->setup_win.single);
   unsigned int cur_col, maxcols, tmp;
   (void)tmp;
@@ -646,10 +646,10 @@ static void draw_setup_window_gpu_select(struct nvtop_interface *interface) {
   wnoutrefresh(interface->setup_win.single);
 }
 
-static const char *setup_window_shortcuts[] = {"Enter", "ESC", "Arrow keys", "+/-", "F12"};
+static const char *setup_window_shortcuts[] = {"Enter", "ESC", "方向键", "+/-", "F12"};
 
-static const char *setup_window_shortcut_description[] = {"Toggle", "Exit", "Navigate Menu",
-                                                          "Increment/Decrement Values", "Save Config"};
+static const char *setup_window_shortcut_description[] = {"切换", "退出", "切换菜单",
+                                                          "增减数值", "保存配置"};
 
 void draw_setup_window_shortcuts(struct nvtop_interface *interface) {
   WINDOW *window = interface->shortcut_window;

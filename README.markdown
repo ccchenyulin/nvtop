@@ -1,3 +1,35 @@
+> ## ⚠️ 本仓库说明
+>
+> **这是 [Syllo/nvtop](https://github.com/Syllo/nvtop) 的简体中文汉化版本（个人自用，非官方项目）。**
+>
+> | 项 | 说明 |
+> |---|---|
+> | 上游项目 | https://github.com/Syllo/nvtop |
+> | 本仓库性质 | 个人汉化，未向上游提交 PR |
+> | 汉化分支 | `chinese-i18n` |
+> | 汉化方式 | 硬改源码字符串字面量（C，无 i18n 框架） |
+> | 汉化范围 | 设置窗口 / 曲线指标名 / 进程列表选项 / CLI 帮助 / 错误消息 |
+> | 原许可证 | GPL-3.0-or-later（见仓库内 COPYING 文件） |
+>
+> **未改动的部分**：
+> - 主界面表头（`PID USER DEV TYPE GPU ... Command`）保留英文
+> - 配置文件键名（`UseColor` / `UpdateInterval` 等，见 `src/interface_options.c`）保持英文，
+>   **不影响已有配置文件**，读写正常
+> - 信号名（`SIGHUP` 等真实信号）保持英文
+>
+> 上游更新后同步方法：
+> ```bash
+> git fetch upstream
+> git merge upstream/master
+> ```
+>
+> 本地安装（中文包名 `nvtop-zh`，与官方 `nvtop` 冲突）：
+> ```bash
+> cd ~/github/forked/nvtop-pkg && makepkg -si
+> ```
+>
+> ---
+
 NVTOP
 =====
 

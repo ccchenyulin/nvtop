@@ -41,7 +41,7 @@ void nvtop_line_plot(WINDOW *win, size_t num_data, const double *data, unsigned 
   rows -= 1;
   double increment = 100. / (double)(rows);
 
-  assert(num_lines <= MAX_LINES_PER_PLOT && "Cannot plot more than " EXPAND_AND_QUOTE(MAX_LINES_PER_PLOT) " lines");
+  assert(num_lines <= MAX_LINES_PER_PLOT && "最多只能绘制 " EXPAND_AND_QUOTE(MAX_LINES_PER_PLOT) " 条线");
   static const short plot_line_colors[MAX_LINES_PER_PLOT] = {7, 8, 9, 10};
   unsigned lvl_before[MAX_LINES_PER_PLOT];
   for (size_t k = 0; k < num_lines; ++k)

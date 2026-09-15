@@ -252,7 +252,7 @@ static void alloc_device_window(unsigned int start_row, unsigned int start_col, 
   return;
 alloc_error:
   endwin();
-  fprintf(stderr, "Error: Not enough columns to draw device information\n");
+  fprintf(stderr, "错误：列数不足以绘制设备信息\n");
   exit(EXIT_FAILURE);
 }
 
@@ -989,7 +989,7 @@ static void draw_devices(struct list_head *devices, struct nvtop_interface *inte
     werase(dev->pcie_info);
     if (device->static_info.integrated_graphics) {
       wcolor_set(dev->pcie_info, cyan_color, NULL);
-      mvwprintw(dev->pcie_info, 0, 0, "Integrated GPU");
+      mvwprintw(dev->pcie_info, 0, 0, "集成显卡");
     } else {
       wcolor_set(dev->pcie_info, cyan_color, NULL);
       mvwprintw(dev->pcie_info, 0, 0, "PCIe ");
@@ -1111,7 +1111,7 @@ static all_processes all_processes_array(struct list_head *devices) {
   if (total_processes_count) {
     merged_devices_processes.processes = malloc(total_processes_count * sizeof(*merged_devices_processes.processes));
     if (!merged_devices_processes.processes) {
-      perror("Cannot allocate memory: ");
+      perror("无法分配内存：");
       exit(EXIT_FAILURE);
     }
   } else {
@@ -1479,13 +1479,13 @@ static void print_processes_on_screen(all_processes all_procs, struct process_wi
     if (process_is_field_displayed(process_type, fields_to_display)) {
       if (processes[i].process->type == gpu_process_graphical_compute) {
         printed += snprintf(&process_print_buffer[printed], process_buffer_line_size - printed, "%*s ",
-                            sizeof_process_field[process_type], "Both G+C");
+                            sizeof_process_field[process_type], "图形+计算");
       } else if (processes[i].process->type == gpu_process_graphical) {
         printed += snprintf(&process_print_buffer[printed], process_buffer_line_size - printed, "%*s ",
-                            sizeof_process_field[process_type], "Graphic");
+                            sizeof_process_field[process_type], "图形");
       } else {
         printed += snprintf(&process_print_buffer[printed], process_buffer_line_size - printed, "%*s ",
-                            sizeof_process_field[process_type], "Compute");
+                            sizeof_process_field[process_type], "计算");
       }
     }
 
@@ -1647,7 +1647,7 @@ static void draw_processes(struct list_head *devices, struct nvtop_interface *in
 }
 
 static const char *signalNames[] = {
-    "Cancel",  "SIGHUP",    "SIGINT",  "SIGQUIT",  "SIGILL",  "SIGTRAP", "SIGABRT", "SIGBUS",
+    "取消",  "SIGHUP",    "SIGINT",  "SIGQUIT",  "SIGILL",  "SIGTRAP", "SIGABRT", "SIGBUS",
     "SIGFPE",  "SIGKILL",   "SIGUSR1", "SIGSEGV",  "SIGUSR2", "SIGPIPE", "SIGALRM", "SIGTERM",
     "SIGCHLD", "SIGCONT",   "SIGSTOP", "SIGTSTP",  "SIGTTIN", "SIGTTOU", "SIGURG",  "SIGXCPU",
     "SIGXFSZ", "SIGVTALRM", "SIGPROF", "SIGWINCH", "SIGIO",   "SIGPWR",  "SIGSYS",
@@ -1669,7 +1669,7 @@ static const size_t nvtop_num_signals = ARRAY_SIZE(signalNames) - 1;
 static void draw_kill_option(struct nvtop_interface *interface) {
   WINDOW *win = interface->process.option_window.option_win;
   wattr_set(win, A_REVERSE, green_color, NULL);
-  mvwprintw(win, 0, 0, "Send signal:");
+  mvwprintw(win, 0, 0, "发送信号：");
   wstandend(win);
   wprintw(win, " ");
   int rows, cols;
@@ -1698,7 +1698,7 @@ static void draw_kill_option(struct nvtop_interface *interface) {
 static void draw_sort_option(struct nvtop_interface *interface) {
   WINDOW *win = interface->process.option_window.option_win;
   wattr_set(win, A_REVERSE, green_color, NULL);
-  mvwprintw(win, 0, 0, "Sort by     ");
+  mvwprintw(win, 0, 0, "排序字段   ");
   wstandend(win);
   wprintw(win, " ");
   int rows, cols;
@@ -1706,7 +1706,7 @@ static void draw_sort_option(struct nvtop_interface *interface) {
     if (interface->process.option_window.selected_row == 0) {
       wattr_set(win, A_STANDOUT, cyan_color, NULL);
     }
-    wprintw(win, "Cancel");
+    wprintw(win, "取消");
     getyx(win, rows, cols);
     for (unsigned int j = cols; j < option_window_size; ++j)
       wprintw(win, " ");
@@ -1780,22 +1780,22 @@ static void update_process_option_win(struct nvtop_interface *interface) {
 }
 
 static const char *option_selection_hidden[] = {
-    "Setup", "Sort", "Kill", "Quit", "Save Config",
+    "设置", "排序", "终止", "退出", "保存配置",
 };
 static const char *option_selection_hidden_num[] = {
     "2", "6", "9", "10", "12",
 };
 
 static const char *option_selection_sort[][2] = {
-    {"Enter", "Sort"},
-    {"ESC", "Cancel"},
-    {"+", "Ascending"},
-    {"-", "Descending"},
+    {"Enter", "排序"},
+    {"ESC", "取消"},
+    {"+", "升序"},
+    {"-", "降序"},
 };
 
 static const char *option_selection_kill[][2] = {
-    {"Enter", "Send"},
-    {"ESC", "Cancel"},
+    {"Enter", "发送"},
+    {"ESC", "取消"},
 };
 
 static const unsigned int option_selection_width = 8;
@@ -2284,9 +2284,9 @@ void interface_check_monitored_gpu_change(struct nvtop_interface **interface, un
   }
 }
 
-static char dontShowAgain[] = "<Don't Show Again>";
-static char okay[] = "<Ok>";
-static char interactKeys[] = "Press Enter to select, arrows \">\" and \"<\" to switch options";
+static char dontShowAgain[] = "<不再显示>";
+static char okay[] = "<确定>";
+static char interactKeys[] = "按回车选择，方向键 \">\" 和 \"<\" 切换选项";
 
 static unsigned message_lines(unsigned message_size, unsigned cols) { return (message_size + cols - 1) / cols; }
 

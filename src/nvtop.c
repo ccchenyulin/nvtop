@@ -58,25 +58,22 @@ static void cont_handler(int signum) {
   signal_cont_received = 1;
 }
 
-static const char helpstring[] = "Available options:\n"
-                                 "  -d --delay        : Select the refresh rate (1 == 0.1s)\n"
-                                 "  -v --version      : Print the version and exit\n"
-                                 "  -c --config-file  : Provide a custom config file location to load/save "
-                                 "preferences\n"
-                                 "  -p --no-plot      : Disable bar plot\n"
-                                 "  -P --no-processes : Disable process list\n"
-                                 "  -r --reverse-abs  : Reverse abscissa: plot the recent data left and "
-                                 "older on the right\n"
-                                 "  -C --no-color     : No colors\n"
-                                 "line information\n"
-                                 "  -f --freedom-unit : Use fahrenheit\n"
-                                 "  -i --gpu-info     : Show bar with additional GPU parameters\n"
-                                 "  -E --encode-hide  : Set encode/decode auto hide time in seconds "
-                                 "(default 30s, negative = always on screen)\n"
-                                 "  -h --help         : Print help and exit\n"
-                                 "  -s --snapshot     : Output the current gpu stats without ncurses"
-                                 "(useful for scripting)\n"
-                                 "  -l --loop         : Output the current gpu stats without ncurses in a loop\n";
+static const char helpstring[] = "可用选项：\n"
+                                 "  -d --delay        : 选择刷新率（1 == 0.1 秒）\n"
+                                 "  -v --version      : 打印版本并退出\n"
+                                 "  -c --config-file  : 指定自定义配置文件路径，用于读写偏好设置\n"
+                                 "  -p --no-plot      : 禁用曲线图\n"
+                                 "  -P --no-processes : 禁用进程列表\n"
+                                 "  -r --reverse-abs  : 反转横轴：最近的数据在左，较早的在右\n"
+                                 "  -C --no-color     : 不使用颜色\n"
+                                 "  -f --freedom-unit : 使用华氏度\n"
+                                 "  -i --gpu-info     : 显示带额外 GPU 参数的栏\n"
+                                 "  -E --encode-hide  : 设置编解码速率的自动隐藏时间（秒）\n"
+                                 "                      （默认 30 秒，负数 = 始终显示在屏幕上）\n"
+                                 "  -h --help         : 打印本帮助并退出\n"
+                                 "  -s --snapshot     : 不启用 ncurses，直接输出当前 GPU 状态\n"
+                                 "                      （便于脚本处理）\n"
+                                 "  -l --loop         : 不启用 ncurses，循环输出 GPU 状态\n";
 
 static const char versionString[] = "nvtop version " NVTOP_VERSION_STRING;
 
@@ -126,12 +123,11 @@ int main(int argc, char **argv) {
       char *endptr = NULL;
       long int delay_val = strtol(optarg, &endptr, 0);
       if (endptr == optarg) {
-        fprintf(stderr, "Error: The delay must be a positive value "
-                        "representing tenths of seconds\n");
+        fprintf(stderr, "错误：刷新率必须为正值（单位为十分之一秒）\n");
         exit(EXIT_FAILURE);
       }
       if (delay_val < 0) {
-        fprintf(stderr, "Error: A negative delay requires a time machine!\n");
+        fprintf(stderr, "错误：负的刷新率需要时光机！\n");
         exit(EXIT_FAILURE);
       }
       update_interval_option_set = true;
@@ -161,7 +157,7 @@ int main(int argc, char **argv) {
       break;
     case 'E': {
       if (sscanf(optarg, "%lf", &encode_decode_hide_time) == EOF) {
-        fprintf(stderr, "Invalid format for encode/decode hide time: %s\n", optarg);
+        fprintf(stderr, "编解码隐藏时间格式无效：%s\n", optarg);
         exit(EXIT_FAILURE);
       }
       encode_decode_timer_option_set = true;
@@ -185,11 +181,11 @@ int main(int argc, char **argv) {
     case '?':
       switch (optopt) {
       case 'd':
-        fprintf(stderr, "Error: The delay option takes a positive value "
+        fprintf(stderr, "错误：刷新率选项需要一个正值 "
                         "representing tenths of seconds\n");
         break;
       default:
-        fprintf(stderr, "Unhandled error in getopt missing argument\n");
+        fprintf(stderr, "getopt 缺少参数，未处理的错误\n");
         exit(EXIT_FAILURE);
         break;
       }
@@ -205,21 +201,21 @@ int main(int argc, char **argv) {
   siga.sa_handler = exit_handler;
 
   if (sigaction(SIGINT, &siga, NULL) != 0) {
-    perror("Impossible to set signal handler for SIGINT: ");
+    perror("无法为 SIGINT 设置信号处理器：");
     exit(EXIT_FAILURE);
   }
   if (sigaction(SIGQUIT, &siga, NULL) != 0) {
-    perror("Impossible to set signal handler for SIGQUIT: ");
+    perror("无法为 SIGQUIT 设置信号处理器：");
     exit(EXIT_FAILURE);
   }
   siga.sa_handler = resize_handler;
   if (sigaction(SIGWINCH, &siga, NULL) != 0) {
-    perror("Impossible to set signal handler for SIGWINCH: ");
+    perror("无法为 SIGWINCH 设置信号处理器：");
     exit(EXIT_FAILURE);
   }
   siga.sa_handler = cont_handler;
   if (sigaction(SIGCONT, &siga, NULL) != 0) {
-    perror("Impossible to set signal handler for SIGCONT: ");
+    perror("无法为 SIGCONT 设置信号处理器：");
     exit(EXIT_FAILURE);
   }
 
@@ -229,7 +225,7 @@ int main(int argc, char **argv) {
   if (!gpuinfo_init_info_extraction(&allDevCount, &monitoredGpus))
     return EXIT_FAILURE;
   if (allDevCount == 0) {
-    fprintf(stdout, "No GPU to monitor.\n");
+    fprintf(stdout, "没有可监视的 GPU。\n");
     return EXIT_SUCCESS;
   }
 

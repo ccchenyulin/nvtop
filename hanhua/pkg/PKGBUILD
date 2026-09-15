@@ -1,0 +1,82 @@
+# Maintainer: ccchenyulin <mwh1240546077@outlook.com>
+#
+# nvtop 简体中文汉化版（个人自用，非官方包）
+#
+# 上游：https://github.com/Syllo/nvtop
+# 汉化仓库：https://github.com/ccchenyulin/nvtop  (分支 chinese-i18n)
+#
+# 与官方 extra/nvtop 的关系：
+#   - conflicts：同一程序的两个版本，不可共存
+#   - provides：装本包会视为满足对 nvtop 的依赖
+#
+# ⚠️ 上游发新版时需重新生成（注意：pacman -Syu 不会自动把本包更新为官方新版，
+#    因为包名不同；官方 nvtop 若被 pacman 安装会与本包冲突）
+
+pkgname=nvtop-zh
+pkgver=3.3.2
+pkgrel=1
+pkgdesc="GPU process monitoring for AMD, Intel and NVIDIA (简体中文汉化版)"
+arch=('x86_64')
+url="https://github.com/ccchenyulin/nvtop"
+license=('GPL-3.0-or-later')
+depends=('ncurses' 'systemd-libs')
+makedepends=('git' 'cmake' 'libdrm' 'systemd')
+conflicts=('nvtop')
+provides=('nvtop')
+
+# 用本地 fork 的当前状态（makepkg 会执行 git archive 打快照，忽略 build/ 等）
+source=("$pkgname-$pkgver::git+file:///home/mwh/github/forked/nvtop#branch=chinese-i18n")
+_srcdir="$pkgname-$pkgver"
+sha256sums=('SKIP')
+
+build() {
+  cd "$srcdir/$_srcdir"
+
+  cmake -B build \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DNVIDIA_SUPPORT=ON \
+    -DAMDGPU_SUPPORT=ON \
+    -DINTEL_SUPPORT=ON \
+    -DBUILD_TESTING=OFF
+  cmake --build build -j"$(nproc)"
+}
+
+package() {
+  cd "$srcdir/$_srcdir"
+
+  DESTDIR="$pkgdir" cmake --install build
+
+  # 许可证
+  install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+
+  # 说明文件（让 pacman -Qi 里能看到这是汉化版）
+  install -Dm644 /dev/stdin "$pkgdir/usr/share/doc/$pkgname/README.zh-CN.md" <<'NOTES'
+# nvtop 简体中文汉化版（nvtop-zh）
+
+本包是 [Syllo/nvtop](https://github.com/Syllo/nvtop) 的简体中文汉化版本。
+
+- 汉化仓库：https://github.com/ccchenyulin/nvtop （分支 `chinese-i18n`）
+- 汉化内容：设置窗口、曲线指标名、进程列表选项、CLI 帮助、错误消息
+- 保留英文：主界面表头、配置文件键名、真实信号名
+
+## 升级说明
+
+上游发布新版时，本包**不会**通过 `pacman -Syu` 自动跟进（包名与官方 `nvtop` 不同）。
+需要手动更新：
+
+```bash
+cd ~/github/forked/nvtop
+git fetch upstream && git merge upstream/master   # 同步上游
+cd ~/github/forked/nvtop-pkg
+# 修改 PKGBUILD 里的 pkgver，并 pkgrel=1
+makepkg -si
+```
+
+## 卸载后恢复官方版
+
+```bash
+sudo pacman -R nvtop-zh && sudo pacman -S nvtop
+```
+NOTES
+}

@@ -388,6 +388,11 @@ int main(int argc, char **argv) {
     case KEY_F(9):
     case KEY_F(6):
     case KEY_F(12):
+    /* vi 风格字母键（与上面的 F 键双绑，见 interface_key()） */
+    case 'S':
+    case 'O':
+    case 'K':
+    case 's':
     case '+':
     case '-':
     case 12: // Ctrl+L

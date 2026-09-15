@@ -1782,8 +1782,9 @@ static void update_process_option_win(struct nvtop_interface *interface) {
 static const char *option_selection_hidden[] = {
     "设置", "排序", "终止", "退出", "保存配置",
 };
-static const char *option_selection_hidden_num[] = {
-    "2", "6", "9", "10", "12",
+/* 完整键名（双绑：F 键 + 字母键，均可用） */
+static const char *option_selection_hidden_key[] = {
+    "F2/S", "F6/O", "F9/K", "F10/q", "F12/s",
 };
 
 static const char *option_selection_sort[][2] = {
@@ -1809,12 +1810,12 @@ static void draw_process_shortcuts(struct nvtop_interface *interface) {
   switch (current_state) {
   case nvtop_option_state_hidden:
     for (size_t i = 0; i < ARRAY_SIZE(option_selection_hidden); ++i) {
-      if (interface->options.hide_processes_list &&
-          (strcmp(option_selection_hidden_num[i], "6") == 0 || strcmp(option_selection_hidden_num[i], "9") == 0))
+      /* 索引 1 = 排序、2 = 终止：隐藏进程列表时这两项无意义，跳过 */
+      if (interface->options.hide_processes_list && (i == 1 || i == 2))
         continue;
 
       if (process_field_displayed_count(interface->options.process_fields_displayed) > 0 || (i != 1 && i != 2)) {
-        wprintw(win, "F%s", option_selection_hidden_num[i]);
+        wprintw(win, "%s", option_selection_hidden_key[i]);
         wattr_set(win, A_STANDOUT, cyan_color, NULL);
         wprintw(win, "%-*s", option_selection_width, option_selection_hidden[i]);
         wstandend(win);
@@ -2105,14 +2106,17 @@ void interface_key(int keyId, struct nvtop_interface *interface) {
   }
   switch (keyId) {
   case KEY_F(2):
+  case 'S':
     if (interface->process.option_window.state == nvtop_option_state_hidden && !interface->setup_win.visible) {
       show_setup_window(interface);
     }
     break;
   case KEY_F(12):
+  case 's':
     save_interface_options_to_config_file(interface->total_dev_count, &interface->options);
     break;
   case KEY_F(9):
+  case 'K':
     if (process_field_displayed_count(interface->options.process_fields_displayed) > 0 &&
         interface->process.option_window.state == nvtop_option_state_hidden) {
       interface->process.option_window.state = nvtop_option_state_kill;
@@ -2122,6 +2126,7 @@ void interface_key(int keyId, struct nvtop_interface *interface) {
     }
     break;
   case KEY_F(6):
+  case 'O':
     if (process_field_displayed_count(interface->options.process_fields_displayed) > 0 &&
         interface->process.option_window.state == nvtop_option_state_hidden) {
       interface->process.option_window.state = nvtop_option_state_sort_by;
